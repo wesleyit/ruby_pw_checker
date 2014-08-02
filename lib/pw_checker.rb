@@ -2,8 +2,8 @@ class PwChecker
 
     def initialize(password)
         @password = password
-        @methods = self.methods.select {|m| m[/rule_/]}
-        @points = @methods.size
+        @pwmethods = self.methods.select {|m| m[/rule_/]}
+        @points = @pwmethods.size
     end
 
     def rule_has_good_length?
@@ -62,8 +62,11 @@ class PwChecker
     end
 
     def classification
-        return "weak" if @points < @methods.size / 3.3
-        return "medium" if @points < @methods.size / 6.6
+        @pwmethods.each {|m| self.send(m)}
+        puts "Points: #{@points} of a total of #{@pwmethods.size}."
+        @problems = @pwmethods.size - @points
+        return "weak" if @problems > 6
+        return "medium" if @problems > 3
         return "strong"
     end
 
